@@ -1,0 +1,11 @@
+GET http://localhost:8080/interprete
+
+###
+
+POST http://localhost:8080/interprete
+Content-Type: application/json
+
+{
+  "nome": "May",
+  "idade": 18
+}
