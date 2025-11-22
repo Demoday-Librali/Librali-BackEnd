@@ -1,42 +1,23 @@
 package com.librali.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import java.math.BigDecimal;
 
-@Entity // diz que essa classe vira uma tabela
-@Table(name = "interprete") // nome da tabela no MySQL
-@Data // cria automaticamente GET/SET, toString, equals, hashCode
+@Entity
+@Table(name = "interprete")
 public class Interprete {
 
-    @Id // chave primária
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // auto incremento
-    private Long id;
+    @Id
+    private Integer pkIdInterprete;
 
-    private String nome;
+    private String pronome;
+    private String descricaoInterprete;
+    private BigDecimal notaMedia;
 
-    private String especialidade;
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "pk_id_interprete")
+    private Usuario usuario;
 
-    // GETTERS E SETTERS
-
-    public Long getId() {
-        return id;
-    }
-
-    // não coloca setId porque ele é auto gerado pelo banco.
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEspecialidade() {
-        return especialidade;
-    }
-
-    public void setEspecialidade(String especialidade) {
-        this.especialidade = especialidade;
-    }
+    // Getters e Setters
 }

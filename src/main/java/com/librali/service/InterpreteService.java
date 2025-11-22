@@ -1,7 +1,7 @@
 package com.librali.service;
 
-import com.librali.model.Interprete;
-import com.librali.repository.InterpreteRepository;
+import com.librali.model.Usuario;
+import com.librali.infrastructure.repository.InterpreteRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,15 +16,15 @@ public class InterpreteService {
         this.repository = repository;
     }
 
-    public List<Interprete> listarTodos() {
+    public List<Usuario> listarTodos() {
         return repository.findAll();
     }
 
-    public Optional<Interprete> buscarPorId(Long id) {
+    public Optional<Usuario> buscarPorId(Long id) {
         return repository.findById(id);
     }
 
-    public Interprete salvar(Interprete interprete) {
+    public Usuario salvar(Usuario interprete) {
         return repository.save(interprete);
     }
 
@@ -32,7 +32,7 @@ public class InterpreteService {
         repository.deleteById(id);
     }
 
-    public Optional<Interprete> atualizar(Long id, Interprete novo) {
+    public Optional<Usuario> atualizar(Long id, Usuario novo) {
         return repository.findById(id).map(existente -> {
             existente.setNome(novo.getNome());
             existente.setEspecialidade(novo.getEspecialidade());
