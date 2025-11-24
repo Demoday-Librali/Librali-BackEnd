@@ -1,43 +1,21 @@
 package com.librali.controller;
 
-import org.springframework.web.bind.annotation.*;
 import com.librali.model.Usuario;
-import com.librali.infrastructure.repository.UsuarioRepository;
-import java.util.List;
+import com.librali.records.UsuarioRequest;
+import com.librali.records.UsuarioResponse;
+import com.librali.service.UsuarioService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    private final UsuarioRepository usuarioRepository;
-
-    public UsuarioController(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
-    }
-
-    @GetMapping
-    public List<Usuario> listar() {
-        return usuarioRepository.findAll();
-    }
+    @Autowired
+    private UsuarioService usuarioService;
 
     @PostMapping
-    public Usuario criar(@RequestBody Usuario usuario) {
-        return usuarioRepository.save(usuario);
-    }
-
-    @GetMapping("/{id}")
-    public Usuario buscar(@PathVariable Integer id) {
-        return usuarioRepository.findById(id).orElse(null);
-    }
-
-    @PutMapping("/{id}")
-    public Usuario atualizar(@PathVariable Integer id, @RequestBody Usuario usuario) {
-        usuario.setPkIdUsuario(id);
-        return usuarioRepository.save(usuario);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deletar(@PathVariable Integer id) {
-        usuarioRepository.deleteById(id);
+    public UsuarioResponse criarUsuario(@RequestBody UsuarioRequest request) {
+        return usuarioService.cadastrar(request);
     }
 }

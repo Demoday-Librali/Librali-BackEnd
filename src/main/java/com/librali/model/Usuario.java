@@ -4,6 +4,7 @@ package com.librali.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import com.librali.model.Planos;
 
 import lombok.*;
 
@@ -28,14 +29,17 @@ public class Usuario {
     private String cpfCnpj;
 
     @Column (name = "tipo_documento")
-    private String Documento;
+    private String documento;
 
     @Column (name = "data_nasc")
     private LocalDate dataNasc;
 
+    private String senha;
+
     private String cep;
-    private String numero;
+    private Integer numero;
     private String rua;
+    private String uf;
     private String cidade;
     private String complemento;
 
@@ -47,13 +51,17 @@ public class Usuario {
     @Column (name = "telefone_secundario")
     private String telSecundario;
 
-    // private String imagemPerfil; Ver como adicionar imagem
+    // private String imagemPerfil; Ver como adicionar imagem usando serviço de armazenamento!!
 
-    @Column (name = "fk_id_plano")
-    private Integer fkIdPlano; // depois mudar para Plano objeto
+    @Column(name= "descricao_usuario")
+    private String descricaoUser;
 
-    private String senha;
-    private String tipo; // pessoa_fisica, empresa, interprete
+    @ManyToOne
+    @MapsId
+    @JoinColumn(name = "pk_id_plano", nullable = false)
+    private Planos plano;
+
+    /*private String tipo; // pessoa_fisica, empresa*/
 
     @Column (name = "data_cadastro")
     private LocalDateTime dataCadastro = LocalDateTime.now(); //define automatico quando cadastrado
