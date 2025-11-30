@@ -1,6 +1,8 @@
 //Aqui é só inserir as variaveis e declarar elas, técnicamente, precisaria dos Getter e Setters também, mas o Lambok faz automatico!!!!!
 package com.librali.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,6 +13,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "usuario")
+@Data //Inclui o @Getter @Setter @NoArgsCOnstructor e @AllArgsConstructor
 @Setter
 @Getter
 @NoArgsConstructor
@@ -56,14 +59,13 @@ public class Usuario {
     @Column(name= "descricao_usuario")
     private String descricaoUser;
 
+    @JsonIgnoreProperties("usuarios")
     @ManyToOne
-    @MapsId
-    @JoinColumn(name = "pk_id_plano", nullable = false)
+    @JoinColumn(name = "fk_id_plano", nullable = false)
     private Planos plano;
 
     /*private String tipo; // pessoa_fisica, empresa*/
 
     @Column (name = "data_cadastro")
     private LocalDateTime dataCadastro = LocalDateTime.now(); //define automatico quando cadastrado
-
 }

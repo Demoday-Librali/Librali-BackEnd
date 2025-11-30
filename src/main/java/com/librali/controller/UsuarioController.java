@@ -3,9 +3,12 @@ package com.librali.controller;
 import com.librali.model.Usuario;
 import com.librali.records.UsuarioRequest;
 import com.librali.records.UsuarioResponse;
+import com.librali.repository.UsuarioRepository;
 import com.librali.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -18,4 +21,14 @@ public class UsuarioController {
     public UsuarioResponse criarUsuario(@RequestBody UsuarioRequest request) {
         return usuarioService.cadastrar(request);
     }
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @GetMapping
+    public List<Usuario> pegaUsuarios() {
+        return usuarioRepository.findAll();
+    }
+
+
 }

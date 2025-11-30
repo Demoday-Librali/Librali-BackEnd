@@ -1,5 +1,6 @@
 package com.librali.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
@@ -28,6 +29,8 @@ public class Planos{
     @Column(name = "tipo_destino")
     private String tipoDestino;
 
+    @JsonIgnoreProperties("plano")
     @OneToMany(mappedBy = "plano")
     private List<Usuario> usuarios;
+
 }
