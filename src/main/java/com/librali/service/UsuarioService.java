@@ -1,91 +1,22 @@
-//Aqui fica a Lógica das rotas
 package com.librali.service;
 
-import com.librali.model.Planos;
 import com.librali.model.Usuario;
-import com.librali.records.UsuarioRequest;
-import com.librali.records.UsuarioResponse;
-import com.librali.repository.UsuarioRepository;
-import com.librali.repository.PlanosRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-public class UsuarioService {
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+public interface UsuarioService {
 
-    @Autowired
-    private PlanosRepository planosRepository;
+    Usuario cadastrar(Usuario usuario);
 
-    public UsuarioResponse cadastrar(UsuarioRequest request) {
+    List<Usuario> listarTodos();
 
-        Usuario usuario = new Usuario();
+    Optional<Usuario> buscarPorId(Integer id);
 
-        usuario.setNomeRazao(request.nomeRazao());
-        usuario.setCpfCnpj(request.cpfCnpj());
-        usuario.setDataNasc(request.dataNasc());
-        usuario.setSenha(request.senha());
-        usuario.setCep(request.cep());
-        usuario.setNumero(request.numero());
-        usuario.setRua(request.rua());
-        usuario.setUf(request.uf());
-        usuario.setCidade(request.cidade());
-        usuario.setComplemento(request.complemento());
-        usuario.setEmail(request.email());
-        usuario.setTelefone(request.telefone());
-        usuario.setTelSecundario(request.telSecundario());
-        usuario.setDescricaoUser(request.descricao());
+    public Usuario atualizar(Integer id, Usuario dadosAtualizados);
 
-        String documento = usuario.getCpfCnpj();
+    Usuario atualizarParcial(Integer id, Map<String, Object> campos);
 
-        // Detectar tipo de documento
-        if (documento != null) {
-            if (documento.length() == 11) {
-                usuario.setDocumento("CPF");
-            } else if (documento.length() == 14) {
-                usuario.setDocumento("CNPJ");
-            } else {
-                usuario.setDocumento("Informe um CPF ou um CNPJ");
-            }
-        }
-
-        // LÓGICA DOS PLANOS
-        if (documento.length() == 11) {
-
-            // CPF = recebe automaticamente o plano gratuito
-            Planos planoGratuito = planosRepository.findById(1)
-                    .orElseThrow(() -> new RuntimeException("Plano gratuito não encontrado no banco"));
-
-            usuario.setPlano(planoGratuito);
-
-        } else {
-
-            // CNPJ = precisa enviar o id do plano
-            if (request.fkIdPlano() == null) {
-                throw new RuntimeException("Empresa precisa escolher um plano para concluir o cadastro.");
-            }
-
-            Planos planoEscolhido = planosRepository.findById(request.fkIdPlano())
-                    .orElseThrow(() -> new RuntimeException("Plano informado não existe."));
-
-            usuario.setPlano(planoEscolhido);
-        }
-
-        // salva o usuário (com plano padrão ou com o plano escolhido)
-        Usuario salvo = usuarioRepository.save(usuario);
-
-        // Retorna o Response
-        return new UsuarioResponse(
-                salvo.getPkIdUsuario(),
-                salvo.getNomeRazao(),
-                salvo.getCpfCnpj(),
-                salvo.getDataNasc(),
-                salvo.getEmail(),
-                salvo.getTelefone(),
-                salvo.getCidade(),
-                salvo.getDocumento()
-        );
-    }
+    void deletar(Integer id);
 }

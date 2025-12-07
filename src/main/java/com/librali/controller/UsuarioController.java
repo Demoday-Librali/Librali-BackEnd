@@ -1,11 +1,15 @@
 package com.librali.controller;
 
+import com.librali.mapper.UsuarioMapper;
+import com.librali.model.Planos;
 import com.librali.model.Usuario;
 import com.librali.records.UsuarioRequest;
 import com.librali.records.UsuarioResponse;
 import com.librali.repository.UsuarioRepository;
+import com.librali.service.PlanoService;
 import com.librali.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,17 +25,35 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private PlanoService planoService;
+
     @PostMapping
-    public UsuarioResponse criarUsuario(@RequestBody UsuarioRequest request) {
-        return usuarioService.cadastrar(request);
+    public ResponseEntity<UsuarioResponse> criarUsuario(@RequestBody UsuarioRequest request) {
+
+        Planos plano = planoService.buscarPorId(request.fkIdPlano()); // valida e retorna o plano
+
+        Usuario usuario = UsuarioMapper.toEntity(request, plano);
+
+        Usuario salvo = usuarioService.cadastrar(usuario);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioMapper.toResponse(salvo));
     }
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
     @GetMapping
-    public List<Usuario> pegaUsuarios() {
-        return usuarioRepository.findAll();
+    public ResponseEntity<List<UsuarioResponse>> listarTodos() {
+        List<Usuario> usuarios = usuarioService.listarTodos();
+        return ResponseEntity.ok(usuarios.stream().map(UsuarioMapper::toResponse).toList());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity <Usuario> pegaUsuarios(@PathVariable int id) {
+        return usuarioService.buscarPorId(id)
+                .map(usuario -> ResponseEntity.ok(usuario))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
@@ -39,71 +61,24 @@ public class UsuarioController {
             @PathVariable Integer id,
             @RequestBody Usuario dadosAtualizados) {
 
-        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
-
-        if (usuarioOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Usuario usuario = usuarioOptional.get();
-
-        usuario.setNomeRazao(dadosAtualizados.getNomeRazao());
-        usuario.setCpfCnpj(dadosAtualizados.getCpfCnpj());
-        usuario.setDocumento(dadosAtualizados.getDocumento());
-        usuario.setDataNasc(dadosAtualizados.getDataNasc());
-        usuario.setSenha(dadosAtualizados.getSenha());
-        usuario.setCep(dadosAtualizados.getCep());
-        usuario.setNumero(dadosAtualizados.getNumero());
-        usuario.setRua(dadosAtualizados.getRua());
-        usuario.setUf(dadosAtualizados.getUf());
-        usuario.setCidade(dadosAtualizados.getCidade());
-        usuario.setComplemento(dadosAtualizados.getComplemento());
-        usuario.setEmail(dadosAtualizados.getEmail());
-        usuario.setTelefone(dadosAtualizados.getTelefone());
-        usuario.setTelSecundario(dadosAtualizados.getTelSecundario());
-        usuario.setDescricaoUser(dadosAtualizados.getDescricaoUser());
-        usuario.setPlano(dadosAtualizados.getPlano());
-
-        Usuario atualizado = usuarioRepository.save(usuario);
-
+        Usuario atualizado = usuarioService.atualizar(id, dadosAtualizados);
         return ResponseEntity.ok(atualizado);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarUsuario(@PathVariable Integer id) {
-        if (!usuarioRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        usuarioRepository.deleteById(id);
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+        usuarioService.deletar(id);
         return ResponseEntity.noContent().build();
     }
-
 
     @PatchMapping("/{id}")
     public ResponseEntity<Usuario> atualizarParcial(
             @PathVariable Integer id,
             @RequestBody Map<String, Object> campos) {
 
-        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
-
-        if (usuarioOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Usuario usuario = usuarioOptional.get();
-
-        campos.forEach((campo, valor) -> {
-            Field field = ReflectionUtils.findField(Usuario.class, campo);
-            if (field != null) {
-                field.setAccessible(true);
-                ReflectionUtils.setField(field, usuario, valor);
-            }
-        });
-
-        Usuario atualizado = usuarioRepository.save(usuario);
-
+        Usuario atualizado = usuarioService.atualizarParcial(id, campos);
         return ResponseEntity.ok(atualizado);
     }
+
 
 }
