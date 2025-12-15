@@ -37,6 +37,9 @@ public class Usuario {
     @Column (name = "data_nasc")
     private LocalDate dataNasc;
 
+    @Column (name= "confirma_interprete")
+    private Boolean confirmaInterprete;
+
     private String senha;
 
     private String cep;

@@ -5,9 +5,11 @@ import com.librali.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface PessoaFisicaRepository extends JpaRepository<PessoaFisica, Integer> {
-    //<tipos>
+import java.util.Optional;
 
+public interface PessoaFisicaRepository
+        extends JpaRepository<PessoaFisica, Long> {
 }
+
+
 

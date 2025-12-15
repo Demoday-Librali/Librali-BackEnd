@@ -16,7 +16,8 @@ public class PessoaFisica {
     @Column (name = "pk_id_pf")
     private Integer pkIdPf;
 
-    private String pronome;
+    @Column (name = "pronome")
+    private String genero;
 
     @Column (name = "sobre_pf")
     private String sobrePf;

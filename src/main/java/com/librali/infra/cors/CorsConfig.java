@@ -11,7 +11,7 @@ public class CorsConfig implements WebMvcConfigurer {
     //Permite dar as permissões ao cliente, oq ele realizar dentro da API direto pela web
     public void addCorsMappings(CorsRegistry registry){
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173") //URL ou LocalHost do Front end
-                .allowedMethods("GET", "POST", "PUT", "DELETE");
+                .allowedOrigins("https://librali-front-end-pi.vercel.app/") //URL ou LocalHost do Front end
+                .allowedMethods("GET", "POST", "PUT","PATCH", "DELETE");
     }
 }

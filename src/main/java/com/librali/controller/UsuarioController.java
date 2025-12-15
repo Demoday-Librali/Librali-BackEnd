@@ -1,10 +1,12 @@
 package com.librali.controller;
 
 import com.librali.mapper.UsuarioMapper;
+import com.librali.model.PessoaFisica;
 import com.librali.model.Planos;
 import com.librali.model.Usuario;
 import com.librali.records.UsuarioRequest;
 import com.librali.records.UsuarioResponse;
+import com.librali.repository.PessoaFisicaRepository;
 import com.librali.repository.UsuarioRepository;
 import com.librali.service.PlanoService;
 import com.librali.service.UsuarioService;
@@ -27,6 +29,7 @@ public class UsuarioController {
 
     @Autowired
     private PlanoService planoService;
+
 
     @PostMapping
     public ResponseEntity<UsuarioResponse> criarUsuario(@RequestBody UsuarioRequest request) {

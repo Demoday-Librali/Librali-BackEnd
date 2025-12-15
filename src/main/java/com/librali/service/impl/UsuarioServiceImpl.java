@@ -2,8 +2,12 @@
 package com.librali.service.impl;
 
 import com.librali.exception.ResourceNotFoundException;
+import com.librali.model.Interprete;
+import com.librali.model.PessoaFisica;
 import com.librali.model.Planos;
 import com.librali.model.Usuario;
+import com.librali.repository.InterpreteRepository;
+import com.librali.repository.PessoaFisicaRepository;
 import com.librali.repository.PlanosRepository;
 import com.librali.repository.UsuarioRepository;
 import com.librali.service.UsuarioService;
@@ -24,6 +28,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private PlanosRepository planosRepository;
+
+    @Autowired
+    private PessoaFisicaRepository pessoaFisicaRepository;
+
+    @Autowired
+    private InterpreteRepository interpreteRepository;
 
     @Override
     public Usuario cadastrar(Usuario usuario) {
@@ -59,7 +69,27 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuario.setDataCadastro(java.time.LocalDateTime.now());
         }
 
-        return usuarioRepository.save(usuario);
+        //Lógica Botão pessoa física ou Intérprete
+        if(usuario.getConfirmaInterprete() == null){
+            usuario.setConfirmaInterprete(true); //por padrão: é intérprete, se a pessoa apertar já é false, ou seja, não é intérprete
+        }
+        Usuario salvo = usuarioRepository.save(usuario); // 1. salva o usuario
+
+        // 2. lógica condicional
+        if (Boolean.FALSE.equals(usuario.getConfirmaInterprete())) {
+            // 2.1 Criar Pessoa Física
+            PessoaFisica pf = new PessoaFisica();
+            pf.setUsuario(salvo);
+            pessoaFisicaRepository.save(pf);
+        } else {
+            // 2.2 Criar Intérprete
+            Interprete interprete = new Interprete();
+            interprete.setUsuario(salvo);
+            interpreteRepository.save(interprete);
+        }
+
+        // 3. return único
+        return salvo;
     }
 
     @Override
@@ -83,6 +113,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setCpfCnpj(dadosAtualizados.getCpfCnpj());
         usuario.setDocumento(dadosAtualizados.getDocumento());
         usuario.setDataNasc(dadosAtualizados.getDataNasc());
+        usuario.setConfirmaInterprete(dadosAtualizados.getConfirmaInterprete());
         usuario.setSenha(dadosAtualizados.getSenha());
         usuario.setCep(dadosAtualizados.getCep());
         usuario.setNumero(dadosAtualizados.getNumero());
