@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import com.librali.model.Planos;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Entity
@@ -57,7 +58,11 @@ public class Usuario {
     @Column (name = "telefone_secundario")
     private String telSecundario;
 
-    // private String imagemPerfil; Ver como adicionar imagem usando serviço de armazenamento!!
+    @Column
+    private String imagemURL;
+
+    @Column
+    private String imagemPerfil;
 
     @Column(name= "descricao_usuario")
     private String descricaoUser;

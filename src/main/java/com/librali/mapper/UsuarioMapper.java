@@ -34,6 +34,7 @@ public class UsuarioMapper {
         usuario.setTelSecundario(request.telSecundario());
 
         usuario.setDescricaoUser(request.descricao());
+        usuario.setImagemPerfil(request.imagemPerfil());
 
         // FK → objeto Planos
         usuario.setPlano(plano);

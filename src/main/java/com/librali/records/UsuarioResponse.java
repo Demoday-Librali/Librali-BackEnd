@@ -2,10 +2,12 @@
 
 package com.librali.records;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDate;
 
 public record UsuarioResponse(
         Integer id, String nomeRazao, String cpfCnpj, LocalDate dataNasc,
-        String email, String telefone, String cidade, String documento
+        String email, String telefone, String cidade, String documento, String imagemURL
 ) {}
 

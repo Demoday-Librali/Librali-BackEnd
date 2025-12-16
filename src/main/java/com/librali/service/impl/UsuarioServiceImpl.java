@@ -1,30 +1,40 @@
 //Aqui fica a Lógica das rotas
 package com.librali.service.impl;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.librali.exception.ResourceNotFoundException;
 import com.librali.model.Interprete;
 import com.librali.model.PessoaFisica;
 import com.librali.model.Planos;
 import com.librali.model.Usuario;
+import com.librali.records.UsuarioRequest;
 import com.librali.repository.InterpreteRepository;
 import com.librali.repository.PessoaFisicaRepository;
 import com.librali.repository.PlanosRepository;
 import com.librali.repository.UsuarioRepository;
 import com.librali.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
+    @Value("${aws.bucket.name}")
+    private String bucketName;
+
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    private UsuarioRequest usuarioRequest;
 
     @Autowired
     private PlanosRepository planosRepository;
@@ -88,9 +98,45 @@ public class UsuarioServiceImpl implements UsuarioService {
             interpreteRepository.save(interprete);
         }
 
-        // 3. return único
+        String imagemPerfilUrl = null;
+
+        if (usuarioRequest.imagem() != null) {
+            imagemPerfilUrl = this.uploadImg(usuarioRequest.imagem());
+        }
+
         return salvo;
     }
+
+    //Esquema de salvar imagem by fernada Kipper
+    @Autowired
+    private AmazonS3 s3Client;
+
+    private String uploadImg(MultipartFile multipartFile){
+        String imgName = UUID.randomUUID() + "-" + multipartFile.getOriginalFilename(); //gerar um nome unico a imagem
+
+        try{
+            File file = this.convertMultipartToFile(multipartFile);
+            s3Client.putObject(bucketName, imgName, file);
+            file.delete();
+            return s3Client.getUrl(bucketName,imgName).toString();
+        } catch (Exception e) {
+            System.out.println("Erro ao subir o arquivo!");
+            return null;
+        }
+    }
+
+    private File convertMultipartToFile(MultipartFile multipartFile) throws IOException {
+        File convFile = new File(
+                Objects.requireNonNull(multipartFile.getOriginalFilename())
+        );
+
+        FileOutputStream fos = new FileOutputStream(convFile);
+        fos.write(multipartFile.getBytes());
+        fos.close();
+
+        return convFile;
+    }
+
 
     @Override
     public List<Usuario> listarTodos() {
