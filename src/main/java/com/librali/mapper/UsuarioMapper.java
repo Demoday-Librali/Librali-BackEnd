@@ -1,6 +1,6 @@
 //O Mapper é criado para converter
 //Request para Entidade (Pasara salvar no banco de ddados)
-// Entidade para Response (Para devoler ao front apenas oq importa)
+// Entidade para Response (Para devoler ao front apenas oque importa)
 package com.librali.mapper;
 
 import com.librali.model.Planos;
@@ -34,7 +34,7 @@ public class UsuarioMapper {
         usuario.setTelSecundario(request.telSecundario());
 
         usuario.setDescricaoUser(request.descricao());
-        usuario.setImagemPerfil(request.imagemPerfil());
+        usuario.setImagemPerfil(request.imagemURL());
 
         // FK → objeto Planos
         usuario.setPlano(plano);
@@ -52,7 +52,8 @@ public class UsuarioMapper {
                 usuario.getEmail(),
                 usuario.getTelefone(),
                 usuario.getCidade(),
-                usuario.getDocumento()
+                usuario.getDocumento(),
+                usuario.getImagemURL()
         );
     }
 }
